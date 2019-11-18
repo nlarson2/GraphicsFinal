@@ -51,6 +51,7 @@ class Global {
         {
             if (!instance)
                 instance = new Global();
+
             return instance;
         }
     private:
@@ -61,6 +62,7 @@ class Global {
             count = 0;
             quit = false;
             octree.genOctreeModel();
+            quit = false;
         }
         Global(Global const& copy);
         Global & operator=(Global const& copy);
@@ -236,10 +238,11 @@ int check_keys(XEvent *e)
 {
     if (e->type != KeyPress && e->type != KeyRelease)
         return 0;
-    //int key = XLookupKeysym(&e->xkey, 0); 
+    int key = XLookupKeysym(&e->xkey, 0); 
     if (e->type == KeyPress) {
         //game.procKeyInput(key);
-        
+        if(key == XK_Escape)
+            g->quit = true;        
     }
     return 0;
 }

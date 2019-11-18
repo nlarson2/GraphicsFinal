@@ -57,11 +57,12 @@ class Octree{
         OctreeNode * root;
         vec3 pos;
         float size;
+        float radius;
         vector<Cube> cubes;
     public:
         Octree(int _maxDepth, int _size)
         {
-            
+            radius = _size/2;
             pos.x = -0.0f;
             pos.y = -0.0f;
             pos.z = -20.0f;
@@ -129,7 +130,7 @@ class Octree{
                 
                 /*vec3 newPos = _pos;
                 newPos += (split[i] * _size / 2);*/
-                if(distance3DCube(0,0,0, newPos.x, newPos.y, newPos.z, _size/2.0f) < this->size/2) {
+                if(distance3DCube(0,0,0, newPos.x, newPos.y, newPos.z, _size/2.0f) < 1.8f) {
                     addNodesSphere(&node->node[i], level, newPos, _size/2.0f);    
                     //genOctreeModel(&(node->node[i]), depth, newPos, _size/2.0f);
                 }
@@ -168,7 +169,7 @@ class Octree{
 
         void drawTree() {
             static float rot = 0.0f;
-            rot += 0.1f;
+            rot += 0.3f;
             glPushMatrix();
             glTranslatef(pos.x, pos.y, pos.z);
             glRotatef(rot, 0.5f, 0.8f, 0.0f);

@@ -149,7 +149,7 @@ float distance3DCube(float x1, float y1, float z1, float x2, float y2, float z2,
 	dir = vec3::Normalize(dir);
 	vec3 ray = vec3(0,0,0);
 	while (!rayCubeCollision(ray, pos, size)) {
-		ray += dir*0.1;
+		ray += dir*0.001;
 	}
 	return distance3D(0,0,0,ray.x, ray.y, ray.z);
 	
