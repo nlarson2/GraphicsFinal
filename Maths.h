@@ -31,6 +31,7 @@ struct vec3 {
 
 
 float distance3D(float x1, float y1, float z1, float x2, float y2, float z2);
+float distance3DCube(float x1, float y1, float z1, float x2, float y2, float z2, float size);
 float distance3D(vec3 v1, vec3 v2);
 bool rayCubeCollision(vec3 ray, vec3 pos, float size);
 

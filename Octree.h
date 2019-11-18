@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <vector>
+#include <fstream>
 
 
 #include "Maths.h"
@@ -67,14 +68,16 @@ class Octree{
             srand(time(nullptr));
             size = _size;
             root = new OctreeNode();
-            root->level = 1;
+            root->level = 0;
             maxDepth = _maxDepth;
             //addNodes(root);
             //addSphere(&root, size, vec3(0,0,0));
             for(int i = 1; i <= maxDepth; i++) {
-                addNodes(root, i+1);
+               // addNodes(root, i);
+               addNodesSphere(root, i, vec3(0,0,0), size/2.0f);
             }
             //printOctree();
+            outputFile("test.txt");
         }
 
         void addNodes(OctreeNode * node, int level) {
@@ -99,7 +102,7 @@ class Octree{
                 addNodes(&node->node[i], level);
             }
         }
-        void addNodesSphere(OctreeNode * node, int level) {
+        void addNodesSphere(OctreeNode * node, int level, vec3 _pos, float _size) {
 
           
             if (node->node == nullptr) {
@@ -117,8 +120,19 @@ class Octree{
 
               
             for(int i = 0; i < 8; i++) {
+
+                vec3 newPos;
+                newPos.x = _pos.x + (_size * split[i].x) / 2;
+                newPos.y = _pos.y + (_size * split[i].y) / 2;
+                newPos.z = _pos.z + (_size * split[i].z) / 2;
                 node->node[i].isLeaf = false;
-                addNodes(&node->node[i], level);
+                
+                /*vec3 newPos = _pos;
+                newPos += (split[i] * _size / 2);*/
+                if(distance3DCube(0,0,0, newPos.x, newPos.y, newPos.z, _size/2.0f) < this->size/2) {
+                    addNodesSphere(&node->node[i], level, newPos, _size/2.0f);    
+                    //genOctreeModel(&(node->node[i]), depth, newPos, _size/2.0f);
+                }
             }
         }
         void printOctree()
@@ -148,7 +162,7 @@ class Octree{
         void genOctreeModel(int depth = 0)
         {
             
-            genOctreeModel(root->node, 0, vec3(0.0f, 0.0f, 0.0f), size);
+            genOctreeModel(root, 0, vec3(0.0f, 0.0f, 0.0f), size);
             
         }
 
@@ -253,6 +267,7 @@ class Octree{
                 /*vec3 newPos = _pos;
                 newPos += (split[i] * _size / 2);*/
                 //if(distance3D(0,0,0, newPos.x, newPos.y, newPos.z ) < this->size/2) {
+                if(node->node)
                     genOctreeModel(&(node->node[i]), depth, newPos, _size/2.0f);
                 // }
             }
@@ -264,7 +279,7 @@ class Octree{
             glTranslatef(pos.x, pos.y, pos.z);
             glRotatef(rot, 0.5f, 0.8f, 0.0f);
             for(unsigned int i = 0; i < cubes.size(); i++) {
-                //if(distance3D(0,0,0, cubes[i].pos.x, cubes[i].pos.y, cubes[i].pos.z ) < this->size/2) {
+               // if(distance3D(0,0,0, cubes[i].pos.x, cubes[i].pos.y, cubes[i].pos.z ) < this->size/2) {
                     glBegin(GL_QUADS);
                         glColor3f(cubes[i].color.x/255, cubes[i].color.y/255, cubes[i].color.z/255);
                         // Top 
@@ -303,7 +318,7 @@ class Octree{
                         glVertex3f( cubes[i].size + cubes[i].pos.x, -cubes[i].size + cubes[i].pos.y, -cubes[i].size + cubes[i].pos.z);  // Bottom-Left of left face
                         glVertex3f( cubes[i].size + cubes[i].pos.x, -cubes[i].size + cubes[i].pos.y,  cubes[i].size + cubes[i].pos.z);  // Bottom-Right of left face
                     glEnd();
-              //  }
+               //}
               
             }
             glBegin(GL_QUADS);
@@ -350,6 +365,42 @@ class Octree{
         }
         //traverse(depth)
         //
+
+        void outputFile(const char * file)
+        {
+            std::ofstream out;
+            out.open(file);
+            if(!out.is_open()) {
+                printf("FAILED TO OPEN FILE");
+                return;
+            }
+            std::string output;
+            output = std::to_string(this->size) + "\n";
+            output += std::to_string(this->maxDepth) + "\n";
+            output += octreeToString(root);
+            out.write(output.c_str(), output.length());
+            
+        }
+        std::string octreeToString(OctreeNode * node, std::string str = "")
+        {
+            if (node == nullptr) {
+                str = "";
+                return str;
+            }
+            if (node->isLeaf) {
+                std::string color = std::to_string(node->color.x);
+                color += " " + std::to_string(node->color.y);
+                color += " " + std::to_string(node->color.z);
+                return str +" "+color+"\n";//+std::to_string()+" " +  + "\n";
+            }
+        
+            std::string ret;
+            for (int i = 0; i < 8; i++) {
+                if(node->node)
+                    ret += octreeToString(&node->node[i], str + to_string(i));
+            }
+            return ret;
+        }
 };
 
 

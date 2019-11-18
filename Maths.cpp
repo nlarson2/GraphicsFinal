@@ -142,6 +142,19 @@ float distance3D(vec3 v1, vec3 v2)
 	return sqrt((v2.x-v1.x)*(v2.x-v1.x) + (v2.y-v1.y)*(v2.y-v1.y) + (v2.z-v1.z)*(v2.z-v1.z));
 }
 
+float distance3DCube(float x1, float y1, float z1, float x2, float y2, float z2, float size) {
+	//float dist = 0;
+	vec3 pos = vec3(x2,y2, z2);
+	vec3 dir = vec3(x2, y2, z2) - vec3(x1,y1,z1);
+	dir = vec3::Normalize(dir);
+	vec3 ray = vec3(0,0,0);
+	while (!rayCubeCollision(ray, pos, size)) {
+		ray += dir*0.1;
+	}
+	return distance3D(0,0,0,ray.x, ray.y, ray.z);
+	
+}
+
 bool rayCubeCollision(vec3 ray, vec3 pos, float size)
 {
 	if(ray.x <= pos.x + size && ray.x >= pos.x - size &&
