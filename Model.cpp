@@ -207,7 +207,9 @@ bool Model::checkCubeCollision(vec3 pos, float size)
 	vec3 dir1, dir2, dir3;
 
 	for ( unsigned int i = 0 ; i < vIndices.size() ; i+=3 ) {
-		usleep(1);
+		if(i%8 == 0) {
+		    usleep(1);
+		}
 		p1 = vert[vIndices.at(i)-1];
 		p2 = vert[vIndices.at(i+1)-1];
 		p3 = vert[vIndices.at(i+2)-1];

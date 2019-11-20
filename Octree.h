@@ -210,7 +210,7 @@ class Octree{
                 /*vec3 newPos = _pos;
                 newPos += (split[i] * _size / 2);*/
                 if(model->checkCubeCollision(newPos, _size/2)) {
-                    printf("So far so good\n");
+           //         printf("So far so good\n");
                     addNodesModel(&node->node[i], level, newPos, _size/2.0f);    
                     //genOctreeModel(&(node->node[i]), depth, newPos, _size/2.0f);
                 }

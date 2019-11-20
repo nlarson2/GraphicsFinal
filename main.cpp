@@ -56,7 +56,7 @@ class Global {
         }
     private:
         static Global * instance;
-        Global() : /*octree(6, 4){*/octree(5, "Archer.obj", "ModelTextureEnemy.png"){
+        Global() : /*octree(6, 4){*/octree(7, "Archer.obj", "ModelTextureEnemy.png"){
             xres = 1200;
             yres = 900;
             count = 0;
