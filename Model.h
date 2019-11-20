@@ -22,6 +22,8 @@ struct Model {
 	void drawTitleModel(float x, float y, float z, float yaw);
 	bool GenerateModel( const char * objFile );
 	bool GenerateTexture( const char * texFile );
+	float getMaxDim();
+	bool checkCubeCollision(vec3 pos, float size);
 private:
 	//bool GenerateModel( const char * objFile );
 	//bool GenerateTexture( const char * texFile );

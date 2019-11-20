@@ -41,6 +41,7 @@ struct OctreeNode{
     float size;
     vec3 pos;
     bool isLeaf;
+    bool edge;
     OctreeNode(){
         isLeaf = false;
     }
@@ -59,13 +60,14 @@ class Octree{
         float size;
         float radius;
         vector<Cube> cubes;
+        Model * model;
     public:
         Octree(int _maxDepth, int _size)
         {
             radius = _size/2;
             pos.x = -0.0f;
             pos.y = -0.0f;
-            pos.z = -20.0f;
+            pos.z = -10.0f;
             srand(time(nullptr));
             size = _size;
             root = new OctreeNode();
@@ -79,6 +81,30 @@ class Octree{
             }
             //printOctree();
             outputFile("test.txt");
+        }
+        Octree(int _maxDepth, const char * _model, const char * _texture)
+        {
+            pos.x = -0.0f;
+            pos.y = -0.0f;
+            pos.z = -10.0f;
+            srand(time(nullptr));
+            model = new Model("Archer.obj", "ModelTextureEnemy.png");
+            size = 4;//model->getMaxDim();
+            printf("Size: %f\n", size);
+            root = new OctreeNode();
+            root->level = 0;
+            root->edge = false;
+            maxDepth = _maxDepth;
+            
+            //addNodes(root);
+            //addSphere(&root, size, vec3(0,0,0));
+            for(int i = 1; i <= maxDepth; i++) {
+               // addNodes(root, i);
+            
+               addNodesModel(root, i, vec3(0,0,0), size/2.0f);
+            }
+            //printOctree();
+            outputFile("model.txt");
         }
 
         void addNodes(OctreeNode * node, int level) {
@@ -110,10 +136,20 @@ class Octree{
                 node->node = new OctreeNode[8];
                 node->isLeaf = false;
                 for(int i = 0; i < 8; i++) {
-                    node->node[i].node = nullptr;
-                    node->node[i].color = vec3(rand()%255, rand()%255, rand()%255);
-                    node->node[i].level = level;
-                    node->node[i].isLeaf = true;
+
+                    vec3 newPos;
+                    newPos.x = _pos.x + (_size * split[i].x) / 2;
+                    newPos.y = _pos.y + (_size * split[i].y) / 2;
+                    newPos.z = _pos.z + (_size * split[i].z) / 2;
+                    if(distance3DCube(0,0,0, newPos.x, newPos.y, newPos.z, _size/2.0f) < 1.8f) {
+                        node->node[i].node = nullptr;
+                        node->node[i].color = vec3(rand()%255, rand()%255, rand()%255);
+                        node->node[i].level = level;
+                        node->node[i].isLeaf = true;
+                    } else {
+                        node->node[i].node = nullptr;
+                        node->node[i].isLeaf = false;
+                    }
                     //printf("OCTREE LEVEL: %d created\n", level);
                 }
                 return;
@@ -136,6 +172,51 @@ class Octree{
                 }
             }
         }
+         void addNodesModel(OctreeNode * node, int level, vec3 _pos, float _size) {
+
+          
+            if (node->node == nullptr) {
+                node->node = new OctreeNode[8];
+                node->isLeaf = false;
+                for(int i = 0; i < 8; i++) {
+                    vec3 newPos;
+                    newPos.x = _pos.x + (_size * split[i].x) / 2;
+                    newPos.y = _pos.y + (_size * split[i].y) / 2;
+                    newPos.z = _pos.z + (_size * split[i].z) / 2;
+                    node->node[i].node = nullptr;
+                    if(model->checkCubeCollision(newPos, _size/2)) {
+                    node->node[i].color = vec3(rand()%255, rand()%255, rand()%255);
+                    node->node[i].level = level;
+                        node->node[i].isLeaf = true;
+                        node->node[i].edge = false;
+                    } else {
+                        node->node[i].isLeaf = false;
+                        node->node[i].edge = true;
+                    }
+                    //printf("OCTREE LEVEL: %d created\n", level);
+                }
+                return;
+            }
+
+              
+            for(int i = 0; i < 8; i++) {
+
+                vec3 newPos;
+                newPos.x = _pos.x + (_size * split[i].x) / 2;
+                newPos.y = _pos.y + (_size * split[i].y) / 2;
+                newPos.z = _pos.z + (_size * split[i].z) / 2;
+                node->node[i].isLeaf = false;
+                
+                /*vec3 newPos = _pos;
+                newPos += (split[i] * _size / 2);*/
+                if(model->checkCubeCollision(newPos, _size/2)) {
+                    printf("So far so good\n");
+                    addNodesModel(&node->node[i], level, newPos, _size/2.0f);    
+                    //genOctreeModel(&(node->node[i]), depth, newPos, _size/2.0f);
+                }
+            }
+        }
+        
         void printOctree()
         {
             printOctree(root);//->node);
@@ -249,7 +330,7 @@ class Octree{
                 printf("faile\n");
                 return;
             }
-            if( node->isLeaf) {//draw?
+            if( node->isLeaf && !node->edge) {//draw?
                 
                 Cube cube;
                 cube.color = node->color;
@@ -269,7 +350,7 @@ class Octree{
                 newPos += (split[i] * _size / 2);*/
                 //if(distance3D(0,0,0, newPos.x, newPos.y, newPos.z ) < this->size/2) {
                 if(node->node)
-                    genOctreeModel(&(node->node[i]), depth, newPos, _size/2.0f);
+                    genOctreeModel(&node->node[i], depth+1, newPos, _size/2.0f);
                 // }
             }
         }
@@ -321,7 +402,7 @@ class Octree{
                     glEnd();
                //}
               
-            }
+            }/*
             glBegin(GL_QUADS);
                         glColor3f(255, 255,255);
                         // Top 
@@ -360,9 +441,10 @@ class Octree{
                         glVertex3f( 1, -1, -1);  // Bottom-Left of left face
                         glVertex3f( 1, -1,  1);  // Bottom-Right of left face
                     glEnd();
-              //  }
+              //  }*/
             
             glPopMatrix();
+            model->draw(pos.x, pos.y, pos.z);
         }
         //traverse(depth)
         //
@@ -382,12 +464,14 @@ class Octree{
             out.write(output.c_str(), output.length());
             
         }
+        
         std::string octreeToString(OctreeNode * node, std::string str = "")
         {
-            if (node == nullptr) {
+            if (node == nullptr || node->edge) {
                 str = "";
                 return str;
             }
+            
             if (node->isLeaf) {
                 std::string color = std::to_string(node->color.x);
                 color += " " + std::to_string(node->color.y);
