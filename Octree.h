@@ -14,6 +14,10 @@
 
 using namespace std;
 
+struct rgb {
+    int r, g, b;
+};
+
 static vec3 split[8] = {
     
     vec3(-1.0f, 1.0f, 1.0f), //LUF
@@ -105,6 +109,81 @@ class Octree{
             }
             //printOctree();
             outputFile("model.txt");
+        }
+
+
+        Octree(const char * voxelFile)
+        {
+            ifstream in;
+            in.open(voxelFile);
+            if(!in.is_open()) {
+                printf("FAILED\n");
+                exit(-1);
+            }
+
+            std::string line;
+            in >> line;
+            size = stoi(line);
+            in >> line;
+            maxDepth = stoi(line);
+
+
+            root = new OctreeNode();
+            root->level = 0;
+            root->edge = false;
+            pos.x = -0.0f;
+            pos.y = -0.0f;
+            pos.z = -10.0f;
+            srand(time(nullptr));
+            while(!in.eof()) {
+                string path;
+                rgb color;
+                in >> path;
+             //   printf("%s ", path.c_str());
+                in >> line;
+                color.r = 155;//rand()%255;//stoi(line);
+               // printf("%d ", color.r);
+                in >> line;
+                color.g = 155;// rand()%255;// stoi(line);
+                //printf("%d ", color.g);
+                in >> line;
+                color.b = 155;// rand()%255;// stoi(line);
+                //printf("%d \n", color.b);
+                
+                //sscanf(line.c_str(),"%s %i %i %i\n", tempPath, &color.r, &color.g, &color.b);
+                //path = *(new std::string(tempPath));
+                //printf("%d\n", path.length());
+                OctreeNode * pnode = root;
+                for(unsigned int i = 0; i < path.length(); i++) {
+                    if (pnode->node == nullptr) {
+                        pnode->node = new OctreeNode[8];
+                        for(int j = 0; j < 8; j++) {
+                            pnode->node[j].isLeaf = false;
+                            pnode->node[j].edge = true;
+                            pnode->node[j].level = i+1;
+                        }
+                    }
+                    pnode->isLeaf = false;
+                    int index = path[i] - 48;
+                    //printf("%d ", index);
+                    pnode = &pnode->node[index];
+                    pnode->edge = false;
+                }
+               // printf("\n");
+                pnode->color.x = color.r;
+                pnode->color.y = color.g;
+                pnode->color.z = color.b;
+                pnode->isLeaf = true;
+
+            }
+            in.close();
+            //exit(-1);
+
+
+
+            //exit(0);
+
+            
         }
 
         void addNodes(OctreeNode * node, int level) {
@@ -444,7 +523,7 @@ class Octree{
               //  }*/
             
             glPopMatrix();
-            model->draw(pos.x, pos.y, pos.z);
+           // model->draw(pos.x, pos.y, pos.z);
         }
         //traverse(depth)
         //
