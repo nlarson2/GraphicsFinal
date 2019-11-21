@@ -95,15 +95,15 @@ class Octree{
             //printOctree();
             outputFile("test.txt");
         }
-        Octree(int _maxDepth, const char * _model, const char * _texture)
+        Octree(int _maxDepth, const char * _model, const char * _texture, const char * outFile, float _size)
         {
             pos.x = -0.0f;
             pos.y = -0.0f;
-            pos.z = -20.0f;
+            pos.z = -20.0f - _size;
             srand(time(nullptr));
             model = new Model(_model, "ModelTextureEnemy.png");
             //model = new Model("WoodenCabinObj.obj", "ModelTextureEnemy.png");
-            size = 4;//model->getMaxDim();
+            size = _size;//4;//model->getMaxDim();
             printf("Size: %f\n", size);
             root = new OctreeNode();
             root->level = 0;
@@ -118,7 +118,7 @@ class Octree{
                addNodesModel(root, 0, vec3(0,0,0), size/2.0f);
             //}
             //printOctree();
-            outputFile("model.txt");
+            outputFile(outFile);
         }
 
 
