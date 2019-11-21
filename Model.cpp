@@ -206,9 +206,10 @@ bool Model::checkCubeCollision(vec3 pos, float size)
 	//direction rays travel
 	vec3 dir1, dir2, dir3;
 
+
 	for ( unsigned int i = 0 ; i < vIndices.size() ; i+=3 ) {
 		//if(i%8 == 0) {
-		 //   usleep(1);
+		//   usleep(1);
 		//}
 		p1 = vert[vIndices.at(i)-1];
 		p2 = vert[vIndices.at(i+1)-1];
@@ -235,7 +236,7 @@ bool Model::checkCubeCollision(vec3 pos, float size)
 		float inStep;
 		for (int i = 0; i < travRatio; i++)
 		{
-			//usleep(1);
+			//if(i%25==0) usleep(1);
 			ray1 += dir1;
 			ray2 += dir2;
 			if(rayCubeCollision(ray1, pos, size) ||
