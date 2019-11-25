@@ -99,7 +99,7 @@ class Octree{
         {
             pos.x = -0.0f;
             pos.y = -0.0f;
-            pos.z = -20.0f - _size;
+            pos.z = -10.0f - _size;
             srand(time(nullptr));
             model = new Model(_model, "ModelTextureEnemy.png");
             //model = new Model("WoodenCabinObj.obj", "ModelTextureEnemy.png");
@@ -151,13 +151,13 @@ class Octree{
                 in >> path;
                 //printf("%s ", path.c_str());
                 in >> line;
-                color.r = 195;//rand()%255;//stoi(line);
+                color.r = /*195;*/rand()%255;//stoi(line);
                 //printf("%d ", color.r);
                 in >> line;
-                color.g = 195;// rand()%255;// stoi(line);
+                color.g = /*195;*/ rand()%255;// stoi(line);
                 //printf("%d ", color.g);
                 in >> line;
-                color.b = 195;// rand()%255;// stoi(line);
+                color.b =/* 195;*/ rand()%255;// stoi(line);
                 //printf("%d \n", color.b);
                 
                 //sscanf(line.c_str(),"%s %i %i %i\n", tempPath, &color.r, &color.g, &color.b);
@@ -336,7 +336,7 @@ class Octree{
                     newPos.z = p->_pos.z + (p->_size * split[i].z) / 2;
                     p->node->node[i].node = nullptr;
                     if(p->model->checkCubeCollision(newPos, p->_size/2)) {
-                        p->node->node[i].color = vec3(150,150,150);//vec3(rand()%255, rand()%255, rand()%255);
+                        p->node->node[i].color = /*vec3(150,150,150);*/vec3(rand()%255, rand()%255, rand()%255);
                         p->node->node[i].level = p->level;
                         p->node->node[i].isLeaf = true;
                         p->node->node[i].edge = false;
