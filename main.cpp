@@ -56,7 +56,7 @@ class Global {
         }
     private:
         static Global * instance;
-        Global() : /*octree(6, 4){*/octree(5, "Archer.obj", "ModelTextureEnemy.png", "archer.txt", 4){/*octree("model.txt") {*/
+        Global()  : /*octree(6, 4){*/octree(5, "Archer.obj", "ModelTextureEnemy.png", "archer.txt", 4){/*octree("model.txt") {*/
             xres = 1200;
             yres = 900;
             count = 0;
@@ -146,6 +146,8 @@ int main()
    // g->quit = true;
     srand(time(NULL));
     init_opengl3D();
+    g->octree.model->GenerateTexture( "ModelTextureEnemy.png" );
+    //g->octree.lateInit(5, "Archer.obj", "ModelTextureEnemy.png", "archer.txt", 4);/*octree("model.txt") {*/
     //Main animation loop
 
     while (!g->quit) {
